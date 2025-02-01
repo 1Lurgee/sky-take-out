@@ -1,16 +1,20 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -30,7 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 员工登录
      *
      * @param employeeLoginDTO 员工登录所需要信息的数据传输模型
-     * @return
+     * @return 通过用户名查询到的员工信息
      */
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
@@ -64,7 +69,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * 新增员工
      * @param employeeDTO 包含了新员工信息的数据传输对象
-     * @return 新增员工结果信息
      */
     @Override
     public void save(EmployeeDTO employeeDTO) {
@@ -86,6 +90,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.insert(employee);
 
+    }
+    /**
+     *员工分页查询
+     * @param employeePageQueryDTO 分页查询所需数据，员工姓名，起始页，每页条目
+     * @return 每一页的员工信息，以及总条目数
+     */
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        //开始分页查询，设置分页查询信息
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+        //从返回的page提取信息，总条目数和指定页面的信息
+        long total = page.getTotal();
+        PageResult pageResult = new PageResult();
+        List<Employee> result = page.getResult();
+        //封装数据
+        pageResult.setTotal(total);
+        pageResult.setRecords(result);
+        return pageResult;
     }
 
 }
