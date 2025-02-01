@@ -72,7 +72,7 @@ public class EmployeeController {
      */
     @PostMapping("/logout")
     @ApiOperation(value = "员工退出")
-    public Result<String> logout() {
+    public Result<?> logout() {
         return Result.success();
     }
 
@@ -84,7 +84,7 @@ public class EmployeeController {
      */
     @PostMapping()
     @ApiOperation(value = "新增员工")
-    public Result<String> save(@RequestBody EmployeeDTO employeeDTO){
+    public Result<?> save(@RequestBody EmployeeDTO employeeDTO){
         //输出日志信息
         log.info("新增员工信息：{}",employeeDTO);
         //调用service层方法
