@@ -105,4 +105,17 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 禁用或启用员工
+     * @param status 要给予员工的状态
+     * @param id 要改变状态的员工id
+     * @return 如果没有捕获异常则返回成功
+     */
+    @PostMapping("status/{status}")
+    @ApiOperation(value = "禁用或启用员工")
+    public Result<?> updateAccountStatus(@PathVariable Integer status,Long id){
+        employeeService.updateAccountStatus(status,id);
+        return Result.success();
+    }
+
 }

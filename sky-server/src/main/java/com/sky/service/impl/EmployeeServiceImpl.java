@@ -111,4 +111,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         return pageResult;
     }
 
+    /**
+     * 禁用或启用员工
+     * @param status 要给予员工的状态
+     * @param id 要改变状态的员工id
+     */
+    @Override
+    public void updateAccountStatus(Integer status, Long id) {
+        //构建实体类，统一参数，方便后续复用Mapper接口中的update函数
+        Employee employee = new Employee();
+        employee.setStatus(status);
+        employee.setId(id);
+        //update方法使用动态SQL，可满足后续修改员工功能
+        employeeMapper.update(employee);
+    }
+
 }

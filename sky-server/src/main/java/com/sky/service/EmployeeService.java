@@ -27,4 +27,11 @@ public interface EmployeeService {
      * @return 每一页的信息，以及总条目数
      */
     PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+
+    /**
+     * 禁用或启用员工
+     * @param status 要给予员工的状态
+     * @param id 要改变状态的员工id
+     */
+    void updateAccountStatus(Integer status, Long id);
 }

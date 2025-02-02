@@ -32,4 +32,10 @@ public interface EmployeeMapper {
      * @return 每一页的员工信息，以及总条目数
      */
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+
+    /**
+     * 根据主键动态的修改员工属性
+     * @param employee 要修改的员工相关数据
+     */
+    void update(Employee employee);
 }
