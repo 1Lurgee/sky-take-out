@@ -111,10 +111,34 @@ public class EmployeeController {
      * @param id 要改变状态的员工id
      * @return 如果没有捕获异常则返回成功
      */
-    @PostMapping("status/{status}")
+    @PostMapping("/status/{status}")
     @ApiOperation(value = "禁用或启用员工")
     public Result<?> updateAccountStatus(@PathVariable Integer status,Long id){
         employeeService.updateAccountStatus(status,id);
+        return Result.success();
+    }
+
+    /**
+     * 根据员工id查询
+     * @param id 员工id
+     * @return 员工信息
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "根据员工id查询")
+    public Result<Employee> getEmpById(@PathVariable Long id){
+        Employee employee = employeeService.getEmpById(id);
+        return Result.success(employee);
+    }
+
+    /**
+     * 编辑员工信息
+     * @param employeeDTO 修改后的员工信息
+     * @return 修改成功与否
+     */
+    @PutMapping
+    @ApiOperation(value = "编辑员工信息")
+    public Result<?> updateEmp(@RequestBody EmployeeDTO employeeDTO){
+        employeeService.updateEmp(employeeDTO);
         return Result.success();
     }
 
