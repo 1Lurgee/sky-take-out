@@ -5,12 +5,12 @@ import com.sky.dto.DishPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 /**
@@ -59,5 +59,35 @@ public class DishController {
     public Result<?> deleteDish(@RequestParam(name="ids") List<Long> ids){
         dishService.deleteDish(ids);
         return Result.success();
+    }
+
+    /**
+     * 停售或禁售菜品
+     * @param status 菜品要设置的状态值
+     * @param id 菜品id
+     * @return 更新成功的信息
+     */
+    @PostMapping("/status/{status}")
+    public Result<?> updateDishStatus(@PathVariable Integer status,Long id){
+        dishService.updateDishStatus(status,id);
+        return Result.success();
+    }
+
+    /**
+     * 通过菜品id获取所有菜品相关信息
+     * @param id 菜品id
+     * @return 所有菜品相关信息
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "通过菜品id获取所有菜品相关信息")
+    public Result<DishVO> getDishById(@PathVariable Long id){
+        DishVO dishVO = dishService.getDishById(id);
+        return Result.success(dishVO);
+    }
+
+    @PutMapping
+    @ApiOperation(value = "修改菜品信息")
+    public Result<?> updateDish(@RequestBody DishDTO dishDTO){
+        return null;
     }
 }

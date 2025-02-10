@@ -3,6 +3,7 @@ package com.sky.service;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.result.PageResult;
+import com.sky.vo.DishVO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,4 +28,18 @@ public interface DishService {
      * @param ids 要删除的菜品id
      */
     void deleteDish(List<Long> ids);
+
+    /**
+     * 停售或禁售菜品
+     * @param status 菜品要设置的状态值
+     * @param id 菜品id
+     */
+    void updateDishStatus(Integer status, Long id);
+
+    /**
+     * 通过菜品id获取所有菜品相关信息
+     * @param id 菜品id
+     * @return 所有菜品相关信息
+     */
+    DishVO getDishById(Long id);
 }

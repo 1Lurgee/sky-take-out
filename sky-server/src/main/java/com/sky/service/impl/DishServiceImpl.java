@@ -106,4 +106,29 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteByDishIds(ids);
 
     }
+
+    /**
+     * 停售或禁售菜品
+     * @param status 菜品要设置的状态值
+     * @param id 菜品id
+     */
+    @Override
+    public void updateDishStatus(Integer status, Long id) {
+        dishMapper.updateDishStatus(status,id);
+    }
+
+    /**
+     * 通过菜品id获取所有菜品相关信息
+     * @param id 菜品id
+     * @return 所有菜品相关信息
+     */
+    @Override
+    public DishVO getDishById(Long id) {
+        Dish dish = dishMapper.getById(id);
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish,dishVO);
+        dishVO.setFlavors(dishFlavors);
+        return dishVO;
+    }
 }
