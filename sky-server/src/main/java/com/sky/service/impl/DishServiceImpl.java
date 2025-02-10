@@ -15,14 +15,18 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class DishServiceImpl implements DishService {
 
     @Autowired
@@ -49,6 +53,7 @@ public class DishServiceImpl implements DishService {
         Long id = dish.getId();
         //批量插入dish_flavor表
         List<DishFlavor> flavors = dishDTO.getFlavors();
+        log.info("口味信息{}",flavors);
         if(flavors != null && !flavors.isEmpty()){
             flavors.forEach(dishFlavor -> dishFlavor.setDishId(id));
             dishFlavorMapper.batchInsert(flavors);
@@ -114,7 +119,8 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public void updateDishStatus(Integer status, Long id) {
-        dishMapper.updateDishStatus(status,id);
+
+        dishMapper.update(Dish.builder().status(status).id(id).build());
     }
 
     /**
@@ -130,5 +136,28 @@ public class DishServiceImpl implements DishService {
         BeanUtils.copyProperties(dish,dishVO);
         dishVO.setFlavors(dishFlavors);
         return dishVO;
+    }
+
+    /**
+     * 修改菜品信息
+     * @param dishDTO 从前端获取的菜品信息
+     */
+    @Override
+    @Transactional
+    public void updateDish(DishDTO dishDTO) {
+        //先更新菜品表信息
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+        dishMapper.update(dish);
+        //删除口味信息
+        List<Long> dishId = new ArrayList<>();
+        dishId.add(dishDTO.getId());
+        dishFlavorMapper.deleteByDishIds(dishId);
+        //重新添加修改后的菜品口味
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if(flavors != null && !flavors.isEmpty()){
+            flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishDTO.getId()));
+            dishFlavorMapper.batchInsert(flavors);
+        }
     }
 }

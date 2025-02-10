@@ -42,4 +42,10 @@ public interface DishService {
      * @return 所有菜品相关信息
      */
     DishVO getDishById(Long id);
+
+    /**
+     * 修改菜品信息
+     * @param dishDTO 从前端获取的菜品信息
+     */
+    void updateDish(DishDTO dishDTO);
 }

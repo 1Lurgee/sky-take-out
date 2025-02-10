@@ -85,9 +85,16 @@ public class DishController {
         return Result.success(dishVO);
     }
 
+    /**
+     * 修改菜品信息
+     * @param dishDTO 从前端获取的菜品信息
+     * @return 修改成功的信息
+     */
     @PutMapping
     @ApiOperation(value = "修改菜品信息")
     public Result<?> updateDish(@RequestBody DishDTO dishDTO){
-        return null;
+        log.info("修改后的菜品信息{}",dishDTO);
+        dishService.updateDish(dishDTO);
+        return Result.success();
     }
 }

@@ -8,7 +8,6 @@ import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -58,12 +57,18 @@ public interface DishMapper {
      */
     void deleteByIds(List<Long> ids);
 
-    /**
-     * 停售或禁售菜品
-     * @param status 菜品要设置的状态值
-     * @param id 菜品id
-     */
-    @Update("update dish set status = #{status} where id = #{id}")
-    void updateDishStatus(Integer status, Long id);
+//    /**
+//     * 停售或禁售菜品
+//     * @param status 菜品要设置的状态值
+//     * @param id 菜品id
+//     */
+//    @Update("update dish set status = #{status} where id = #{id}")
+//    void updateDishStatus(Integer status, Long id);
 
+    /**
+     * 更新菜品信息以及禁售起售菜品
+     * @param dish 更新后的菜品信息
+     */
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Dish dish);
 }
