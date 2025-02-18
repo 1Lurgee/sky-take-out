@@ -2,6 +2,7 @@ package com.sky.service;
 
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.vo.DishVO;
 import org.springframework.stereotype.Service;
@@ -48,4 +49,18 @@ public interface DishService {
      * @param dishDTO 从前端获取的菜品信息
      */
     void updateDish(DishDTO dishDTO);
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish 包含分类id
+     * @return 相应菜品及分类id
+     */
+    List<DishVO> listWithFlavor(Dish dish);
+
+    /**
+     * 根据分类id查询菜品数据
+     * @param dish 分类id
+     * @return 属于该分类的菜品
+     */
+    List<Dish> list(Dish dish);
 }
