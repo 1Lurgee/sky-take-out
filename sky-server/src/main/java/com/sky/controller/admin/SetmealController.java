@@ -22,14 +22,14 @@ public class SetmealController {
 
     /**
      * 新增套餐
-     * @param setmealDTO 参套信息
+     * @param setmealDTO 套餐信息
      * @return 插入成功信息
      */
     @PostMapping
     @ApiOperation("新增套餐")
-    public Result<?> save(@RequestBody SetmealDTO setmealDTO){
+    public Result<?> saveSetmealWithDishes(@RequestBody SetmealDTO setmealDTO){
         log.info("要新增的菜品：{}",setmealDTO);
-        setmealService.insert(setmealDTO);
+        setmealService.saveSetmealWithDishes(setmealDTO);
         return Result.success();
     }
 

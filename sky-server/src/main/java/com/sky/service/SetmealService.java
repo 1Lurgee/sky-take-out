@@ -14,7 +14,7 @@ public interface SetmealService {
 
     /**
      * 新增套餐
-     * @param setmealDTO 参套信息
+     * @param setmealDTO 套餐信息
      */
-    void insert(SetmealDTO setmealDTO);
+    void saveSetmealWithDishes(SetmealDTO setmealDTO);
 }
