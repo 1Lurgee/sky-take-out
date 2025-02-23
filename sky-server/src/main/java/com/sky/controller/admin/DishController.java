@@ -105,6 +105,7 @@ public class DishController {
      * @return 属于该分类的菜品
      */
     @GetMapping("/list")
+    @ApiOperation("通过分类id查询菜品")
     public Result<List<Dish>> getDishByCategoryId(Long categoryId){
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);
