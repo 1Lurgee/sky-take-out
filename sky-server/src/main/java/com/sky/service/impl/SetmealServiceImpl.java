@@ -118,4 +118,14 @@ public class SetmealServiceImpl implements SetmealService {
         }).collect(Collectors.toList());
         setmealDishMapper.batchInsert(setmealDishList);
     }
+
+    /**
+     * 起售或停售套餐
+     * @param status 要改变成的状态
+     */
+    @Override
+    public void updateStatus(Integer status) {
+        Setmeal setmeal = Setmeal.builder().status(status).build();
+        setmealMapper.update(setmeal);
+    }
 }
