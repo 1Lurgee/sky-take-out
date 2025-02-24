@@ -71,4 +71,17 @@ public class SetmealController {
     public Result<SetmealVO> getSetmealWithDishesById(@PathVariable Long id){
         return Result.success(setmealService.getSetmealWithDishesById(id));
     }
+
+    /**
+     * 修改套餐
+     * @param setmealDTO 需要修改的套餐信息
+     * @return 修改成功信息
+     */
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result<?> update(@RequestBody SetmealDTO setmealDTO){
+        log.info("要修改的菜品信息：{}",setmealDTO);
+        setmealService.update(setmealDTO);
+        return Result.success();
+    }
 }
