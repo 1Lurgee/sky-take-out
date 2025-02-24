@@ -10,6 +10,7 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,5 +75,22 @@ public class SetmealServiceImpl implements SetmealService {
         setmealMapper.batchDelete(ids);
         //删除套餐相关菜品信息
         setmealDishMapper.batchDelete(ids);
+    }
+
+    /**
+     * 根据id查询套餐
+     * @param id 套餐id
+     * @return 套餐及其包含菜品
+     */
+    @Override
+    public SetmealVO getSetmealWithDishesById(Long id) {
+        SetmealVO setmealVO = new SetmealVO();
+        //获取套餐信息
+        Setmeal setmeal = setmealMapper.getById(id);
+        //获取套餐包含菜品信息
+        List<SetmealDish> list = setmealDishMapper.getBySetmealId(id);
+        BeanUtils.copyProperties(setmeal,setmealVO);
+        setmealVO.setSetmealDishes(list);
+        return setmealVO;
     }
 }

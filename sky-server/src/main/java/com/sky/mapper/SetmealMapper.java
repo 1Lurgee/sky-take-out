@@ -40,4 +40,12 @@ public interface SetmealMapper {
      * @param ids 要删除的套餐id
      */
     void batchDelete(List<Long> ids);
+
+    /**
+     * 根据id查询套餐
+     * @param id 套餐id
+     * @return 套餐
+     */
+    @Select("select * from setmeal where id = #{id}")
+    Setmeal getById(Long id);
 }
