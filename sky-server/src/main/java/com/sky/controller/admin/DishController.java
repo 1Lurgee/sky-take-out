@@ -11,8 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理接口
@@ -25,6 +27,8 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate;
 
     /**
      * 添加菜品
@@ -35,6 +39,8 @@ public class DishController {
     @ApiOperation("添加菜品")
     public Result<?> saveDishWithFlavors(@RequestBody DishDTO dishDTO){
         dishService.saveDishWithFlavors(dishDTO);
+        String pattern = "dish_" + dishDTO.getCategoryId();
+        cleanCache(pattern);
         return Result.success();
     }
 
@@ -59,6 +65,7 @@ public class DishController {
     @DeleteMapping
     public Result<?> deleteDish(@RequestParam(name="ids") List<Long> ids){
         dishService.deleteDish(ids);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -71,6 +78,7 @@ public class DishController {
     @PostMapping("/status/{status}")
     public Result<?> updateDishStatus(@PathVariable Integer status,Long id){
         dishService.updateDishStatus(status,id);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -96,6 +104,7 @@ public class DishController {
     public Result<?> updateDish(@RequestBody DishDTO dishDTO){
         log.info("修改后的菜品信息{}",dishDTO);
         dishService.updateDish(dishDTO);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -111,5 +120,11 @@ public class DishController {
         dish.setCategoryId(categoryId);
         List<Dish> list = dishService.list(dish);
         return Result.success(list);
+    }
+
+    private void cleanCache(String pattern){
+        Set keys = redisTemplate.keys(pattern);
+        assert keys != null;
+        redisTemplate.delete(keys);
     }
 }
