@@ -122,6 +122,10 @@ public class DishController {
         return Result.success(list);
     }
 
+    /**
+     * 删除缓存
+     * @param pattern 键
+     */
     private void cleanCache(String pattern){
         Set keys = redisTemplate.keys(pattern);
         assert keys != null;
