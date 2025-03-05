@@ -84,4 +84,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public void cleanShoppingCart() {
         shoppingCartMapper.deleteByUserId(BaseContext.getCurrentId());
     }
+
+    /**
+     * 删除购物车中一个商品
+     * @param shoppingCartDTO 要删除的菜品活套餐信息
+     */
+    @Override
+    public void subItem(ShoppingCartDTO shoppingCartDTO) {
+        Long userId = BaseContext.getCurrentId();
+        shoppingCartMapper.deleteItem(shoppingCartDTO,userId);
+    }
 }

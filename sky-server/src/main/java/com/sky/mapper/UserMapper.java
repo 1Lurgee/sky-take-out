@@ -20,4 +20,12 @@ public interface UserMapper {
      * @param user 要插入的用户数据
      */
     void insert(User user);
+
+    /**
+     * 通过用户id获取用户
+     * @param id 用户id
+     * @return 用户信息
+     */
+    @Select("select * from user where id = #{id}")
+    User getById(Long id);
 }
