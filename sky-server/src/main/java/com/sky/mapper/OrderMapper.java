@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import com.sky.vo.OrderStatisticsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -61,4 +62,10 @@ public interface OrderMapper {
      * @param order 要改成的信息
      */
     void updateById(Orders order);
+
+    /**
+     * 各个状态的订单数量统计
+     * @return 各个状态的订单数量
+     */
+    OrderStatisticsVO getOrderStatistics();
 }

@@ -247,5 +247,35 @@ public class OrderServiceImpl implements OrderService {
         orderDetailMapper.insertBatch(orderDetailList);
     }
 
+    /**
+     * 订单查询
+     * @param ordersPageQueryDTO 查询条件
+     * @return 订单信息
+     */
+    @Override
+    public PageResult getAllOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+        List<OrderVO> list = new ArrayList<>();
+        for (Orders order : page) {
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(order,orderVO);
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(order.getId());
+            orderVO.setOrderDetailList(orderDetailList);
+            list.add(orderVO);
+        }
+        return new PageResult(page.getTotal(),list);
+    }
+
+    /**
+     * 各个状态的订单数量统计
+     * @return 各个状态的订单数量
+     */
+    @Override
+    public OrderStatisticsVO getOrderStatistics() {
+        OrderStatisticsVO orderStatisticsVO = orderMapper.getOrderStatistics();
+        return orderStatisticsVO;
+    }
+
 
 }

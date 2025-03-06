@@ -67,6 +67,24 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
+            <if test="number != null and number != ''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="beginTime != null">
+                and checkout_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and checkout_time &lt;= #{endTime}
+            </if>
         </where>
+    </select>
+    <select id="getOrderStatistics" resultType="com.sky.vo.OrderStatisticsVO">
+        select SUM(case when status = 2 then 1 else 0 end) as toBeConfirmed,
+               SUM(case when status = 3 then 1 else 0 end) as confirmed,
+               SUM(case when status = 4 then 1 else 0 end) as deliveryInProgress
+        from orders
     </select>
 </mapper>
