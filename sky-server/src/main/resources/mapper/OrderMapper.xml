@@ -18,6 +18,7 @@
     <update id="update" parameterType="com.sky.entity.Orders">
         update orders
         <set>
+            <trim prefixOverrides=",">
             <if test="cancelReason != null and cancelReason!='' ">
                 cancel_reason=#{cancelReason},
             </if>
@@ -42,18 +43,7 @@
             <if test="deliveryTime != null">
                 delivery_time = #{deliveryTime}
             </if>
-        </set>
-        where id = #{id}
-    </update>
-    <update id="updateById">
-        update orders
-        <set>
-            <if test="status != null">
-                status = #{status},
-            </if>
-            <if test="cancelTime != null">
-                cancel_time = #{cancelTime},
-            </if>
+            </trim>
         </set>
         where id = #{id}
     </update>

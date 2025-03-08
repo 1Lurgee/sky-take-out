@@ -58,12 +58,6 @@ public interface OrderMapper {
     Orders getById(Long id);
 
     /**
-     * 修改订单
-     * @param order 要改成的信息
-     */
-    void updateById(Orders order);
-
-    /**
      * 各个状态的订单数量统计
      * @return 各个状态的订单数量
      */
