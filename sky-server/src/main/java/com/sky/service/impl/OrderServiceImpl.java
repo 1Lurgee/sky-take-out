@@ -14,6 +14,7 @@ import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.*;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -39,6 +38,8 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 //    @Autowired
 //    private WeChatPayUtil weChatPayUtil;
 
@@ -153,6 +154,14 @@ public class OrderServiceImpl implements OrderService {
                 .checkoutTime(LocalDateTime.now())
                 .build();
 
+        //webSocket发送通知
+        //放置信息
+        Map<String,String> map = new HashMap<>();
+        map.put("type","1"); //1来单提醒，2表示客户催单
+        map.put("orderId",String.valueOf(ordersDB.getId()));    //订单id
+        map.put("content",outTradeNo);  //订单号
+        String jsonString = JSONObject.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
         orderMapper.update(orders);
     }
 
