@@ -18,6 +18,7 @@ import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,8 @@ public class OrderServiceImpl implements OrderService {
 //    private WeChatPayUtil weChatPayUtil;
 
     private Orders orders;
+    @Autowired
+    private HttpMessageConverters messageConverters;
 
     /**
      * 提交订单
@@ -156,10 +159,10 @@ public class OrderServiceImpl implements OrderService {
 
         //webSocket发送通知
         //放置信息
-        Map<String,String> map = new HashMap<>();
-        map.put("type","1"); //1来单提醒，2表示客户催单
-        map.put("orderId",String.valueOf(ordersDB.getId()));    //订单id
-        map.put("content",outTradeNo);  //订单号
+        Map<String, String> map = new HashMap<>();
+        map.put("type", "1"); //1来单提醒，2表示客户催单
+        map.put("orderId", String.valueOf(ordersDB.getId()));    //订单id
+        map.put("content", outTradeNo);  //订单号
         String jsonString = JSONObject.toJSONString(map);
         webSocketServer.sendToAllClient(jsonString);
         orderMapper.update(orders);
@@ -191,7 +194,7 @@ public class OrderServiceImpl implements OrderService {
         for (Orders o : ordersList) {
             List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(o.getId());
             OrderVO orderVO = new OrderVO();
-            BeanUtils.copyProperties(o,orderVO);
+            BeanUtils.copyProperties(o, orderVO);
             orderVO.setOrderDetailList(orderDetails);
             orderDetailList.add(orderVO);
         }
@@ -204,6 +207,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 查询订单详情
+     *
      * @param id 订单id
      * @return 相应订单详情
      */
@@ -214,12 +218,12 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         OrderVO orderVO = new OrderVO();
         //封装信息
-        BeanUtils.copyProperties(order,orderVO);
+        BeanUtils.copyProperties(order, orderVO);
         orderVO.setOrderDetailList(orderDetailList);
         return orderVO;
     }
 
-    private void toCancelOrder(Long id){
+    private void toCancelOrder(Long id) {
         Orders order = new Orders();
         //设置取消时间、订单状态
         order.setId(id);
@@ -229,8 +233,10 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(order);
 
     }
+
     /**
      * 取消订单
+     *
      * @param id 要取消的订单id
      */
     @Override
@@ -242,7 +248,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
         //未付款的情况
-        if(Objects.equals(orderDB.getPayStatus(), Orders.UN_PAID)) {
+        if (Objects.equals(orderDB.getPayStatus(), Orders.UN_PAID)) {
             toCancelOrder(id);
             //仅接单或仅付款
         } else if (Objects.equals(orderDB.getStatus(), Orders.CONFIRMED) || Objects.equals(orderDB.getStatus(), Orders.TO_BE_CONFIRMED)) {
@@ -255,13 +261,14 @@ public class OrderServiceImpl implements OrderService {
 //                    new BigDecimal(0.01));
 //            log.info("申请退款：{}", refund);
             toCancelOrder(id);
-        }else{
+        } else {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
     }
 
     /**
      * 再来一单
+     *
      * @param id 订单号
      */
     @Override
@@ -287,26 +294,28 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 订单查询
+     *
      * @param ordersPageQueryDTO 查询条件
      * @return 订单信息
      */
     @Override
     public PageResult getAllOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
-        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
         List<OrderVO> list = new ArrayList<>();
         for (Orders order : page) {
             OrderVO orderVO = new OrderVO();
-            BeanUtils.copyProperties(order,orderVO);
+            BeanUtils.copyProperties(order, orderVO);
             List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(order.getId());
             orderVO.setOrderDetailList(orderDetailList);
             list.add(orderVO);
         }
-        return new PageResult(page.getTotal(),list);
+        return new PageResult(page.getTotal(), list);
     }
 
     /**
      * 各个状态的订单数量统计
+     *
      * @return 各个状态的订单数量
      */
     @Override
@@ -316,6 +325,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 接单
+     *
      * @param ordersConfirmDTO 订单id
      */
     @Override
@@ -323,20 +333,21 @@ public class OrderServiceImpl implements OrderService {
         //封装数据
         Orders order = new Orders();
         ordersConfirmDTO.setStatus(Orders.CONFIRMED);
-        BeanUtils.copyProperties(ordersConfirmDTO,order);
+        BeanUtils.copyProperties(ordersConfirmDTO, order);
         //更改订单状态
         orderMapper.update(order);
     }
 
     /**
      * 拒单
+     *
      * @param ordersRejectionDTO 订单id
      */
     @Override
     public void reject(OrdersRejectionDTO ordersRejectionDTO) {
         //后端进行二次验证，防止前端连续发送相同请求或者恶意攻击
         Orders sourceOrder = orderMapper.getById(ordersRejectionDTO.getId());
-        if(!Objects.equals(sourceOrder.getStatus(), Orders.TO_BE_CONFIRMED)){
+        if (!Objects.equals(sourceOrder.getStatus(), Orders.TO_BE_CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         //退款
@@ -363,13 +374,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 取消订单
+     *
      * @param ordersCancelDTO 要取消的订单
      */
     @Override
     public void adminCancel(OrdersCancelDTO ordersCancelDTO) {
         //后端进行二次验证，防止前端连续发送相同请求或者恶意攻击
         Orders sourceOrder = orderMapper.getById(ordersCancelDTO.getId());
-        if(!Objects.equals(sourceOrder.getStatus(), Orders.CONFIRMED)){
+        if (!Objects.equals(sourceOrder.getStatus(), Orders.CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         //退款
@@ -396,12 +408,13 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 派送订单
+     *
      * @param id 订单id
      */
     @Override
     public void delivery(Long id) {
         Orders orderDB = orderMapper.getById(id);
-        if(!Objects.equals(orderDB.getStatus(), Orders.CONFIRMED)){
+        if (!Objects.equals(orderDB.getStatus(), Orders.CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         Orders order = new Orders();
@@ -412,12 +425,13 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 完成订单
+     *
      * @param id 订单id
      */
     @Override
     public void complete(Long id) {
         Orders orderDB = orderMapper.getById(id);
-        if(!Objects.equals(orderDB.getStatus(), Orders.DELIVERY_IN_PROGRESS)){
+        if (!Objects.equals(orderDB.getStatus(), Orders.DELIVERY_IN_PROGRESS)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         Orders order = new Orders();
@@ -425,6 +439,27 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Orders.COMPLETED);
         order.setDeliveryTime(LocalDateTime.now());
         orderMapper.update(order);
+    }
+
+    /**
+     * 催单
+     *
+     * @param id 订单id
+     */
+    @Override
+    public void reminder(Long id) {
+        Orders order = orderMapper.getById(id);
+        if (order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("type", "2");//1来单提醒，2客户催单
+        map.put("orderId", String.valueOf(id));
+        map.put("content", "订单号：" + order.getNumber());
+        String jsonString = JSONObject.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
+
     }
 
 
