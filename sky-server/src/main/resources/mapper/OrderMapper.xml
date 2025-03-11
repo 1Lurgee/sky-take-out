@@ -19,30 +19,30 @@
         update orders
         <set>
             <trim prefixOverrides=",">
-            <if test="cancelReason != null and cancelReason!='' ">
-                cancel_reason=#{cancelReason},
-            </if>
-            <if test="rejectionReason != null and rejectionReason!='' ">
-                rejection_reason=#{rejectionReason},
-            </if>
-            <if test="cancelTime != null">
-                cancel_time=#{cancelTime},
-            </if>
-            <if test="payStatus != null">
-                pay_status=#{payStatus},
-            </if>
-            <if test="payMethod != null">
-                pay_method=#{payMethod},
-            </if>
-            <if test="checkoutTime != null">
-                checkout_time=#{checkoutTime},
-            </if>
-            <if test="status != null">
-                status = #{status},
-            </if>
-            <if test="deliveryTime != null">
-                delivery_time = #{deliveryTime}
-            </if>
+                <if test="cancelReason != null and cancelReason!='' ">
+                    cancel_reason=#{cancelReason},
+                </if>
+                <if test="rejectionReason != null and rejectionReason!='' ">
+                    rejection_reason=#{rejectionReason},
+                </if>
+                <if test="cancelTime != null">
+                    cancel_time=#{cancelTime},
+                </if>
+                <if test="payStatus != null">
+                    pay_status=#{payStatus},
+                </if>
+                <if test="payMethod != null">
+                    pay_method=#{payMethod},
+                </if>
+                <if test="checkoutTime != null">
+                    checkout_time=#{checkoutTime},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="deliveryTime != null">
+                    delivery_time = #{deliveryTime}
+                </if>
             </trim>
         </set>
         where id = #{id}
@@ -79,6 +79,20 @@
     </select>
     <select id="sumByMap" resultType="java.lang.Double">
         select sum(amount) from orders
+        <where>
+            <if test="begin != null">
+                and order_time &gt; #{begin}
+            </if>
+            <if test="end != null">
+                and order_time &lt; #{end}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(*) from orders
         <where>
             <if test="begin != null">
                 and order_time &gt; #{begin}
